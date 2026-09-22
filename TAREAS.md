@@ -1,6 +1,6 @@
 # Tareas
 
-* [ ] 1. Definir el tipo `Curso`, que contiene:
+* [x] 1. Definir el tipo `Curso`, que contiene:
 
   * `(Int) codigo`
   * `(String) nombre`

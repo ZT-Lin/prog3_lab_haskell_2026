@@ -35,10 +35,26 @@ inscribir code ((Curso codigo b cupo inscrito):xs)
     | (code == codigo) && (cupo <= inscrito) = Left "Sin cupo"
     | otherwise = inscribir code xs
 
-{- No entiendo xq hay un error -}
-{- preguntar al profe miercoles o viernes -}
-
-
-
+{- Ejercicio 2-5 -}
 foldArbol :: (a -> b -> b -> b) -> b -> Arbol a -> b
-foldArbol = 
+foldArbol _ acc Vacio = acc
+foldArbol f acc (Nodo v i d) = f v (foldArbol f acc i) (foldArbol f acc d) 
+
+{- funcion auxiliar -}
+contar :: Curso -> (Int,Inscrito) -> (Int, Inscrito)-> (Int,Inscrito)
+contar (Curso _ _ _ inscrito) (a,b) (c,d) = (a+c+1, b+d+inscrito)
+
+{- implementacion con foldArbol -}
+calcular :: Arbol Curso -> (Int, Inscrito)
+calcular = foldArbol contar (0,0)
+
+{- Ejercicio 2-6 -}
+{- funcion auxiliar -}
+lugarDisponible :: Curso -> Bool -> Bool -> Bool
+lugarDisponible (Curso _ _ cupo inscrito) i d 
+    | cupo > inscrito = True && i && d
+    | otherwise = False && i && d
+
+{- implementacion con foldArbol -}
+disponible :: Arbol Curso -> Bool
+disponible = foldArbol lugarDisponible True

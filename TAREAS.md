@@ -34,7 +34,7 @@
 
   * [x] Resolver utilizando `foldr`
 
-* [ ] 2-4. Completar la función:
+* [x] 2-4. Completar la función:
 
   ```haskell
   inscribir :: Int -> [Curso] -> Either String [Curso]
@@ -44,13 +44,13 @@
   * [x] Distinguir curso sin cupo
   * [x] Actualizar la cantidad de inscritos si hay cupo
 
-* [ ] 2-5. Implementar:
+* [x] 2-5. Implementar:
 
   ```haskell
   foldArbol :: (a -> b -> b -> b) -> b -> Arbol a -> b
   ```
 
-  * [ ] Calcular la cantidad de cursos
-  * [ ] Calcular el total de inscritos
+  * [x] Calcular la cantidad de cursos
+  * [x] Calcular el total de inscritos
 
-* [ ] 2-6. Determinar mediante `foldArbol` si todos los cursos tienen lugares disponibles.
+* [x] 2-6. Determinar mediante `foldArbol` si todos los cursos tienen lugares disponibles.

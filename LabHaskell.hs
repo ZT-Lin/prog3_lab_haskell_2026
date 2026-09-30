@@ -1,56 +1,94 @@
-{- === DATOS DE PRUEBA === -}
-cursoMIPS   = Curso 10 "MIPS" 30 15     -- Caso Normal: A la mitad de capacidad
-cursoJava   = Curso 20 "Java" 40 40     -- Caso Límite: Totalmente lleno 
-cursoProlog = Curso 30 "Prolog" 20 19   -- Caso Límite: Queda exactamente 1 lugar
+{- === DATOS DE PRUEBA EXTRA: LISTA GRANDE === -}
+
+cursoHaskell   = Curso  5 "Haskell"   25 10
+cursoPython    = Curso 15 "Python"    35 35   -- lleno
+cursoC         = Curso 25 "C"         50 20
+cursoRuby      = Curso 35 "Ruby"      30 30   -- lleno
+cursoSwift     = Curso 45 "Swift"     20  5
+cursoKotlin    = Curso 55 "Kotlin"    40 39   -- queda 1 lugar
+cursoRust      = Curso 65 "Rust"      15 15   -- lleno
+cursoGo        = Curso 75 "Go"        60 45
+cursoScala     = Curso 85 "Scala"     10  0
+cursoErlang    = Curso 95 "Erlang"    12 12   -- lleno
 
 listaCursos :: [Curso]
-listaCursos = [cursoMIPS, cursoJava, cursoProlog]
+listaCursos =
+    [ cursoHaskell
+    , cursoPython
+    , cursoC
+    , cursoRuby
+    , cursoSwift
+    , cursoKotlin
+    , cursoRust
+    , cursoGo
+    , cursoScala
+    , cursoErlang
+    ]
 
--- Árbol ordenado por código (20 en la raíz, 10 a la izq, 30 a la der)
+{- === DATOS DE PRUEBA EXTRA: ÁRBOL GRANDE === -}
+
 arbolCursos :: Arbol Curso
-arbolCursos = Nodo cursoJava (Nodo cursoMIPS Vacio Vacio) (Nodo cursoProlog Vacio Vacio)
-
+arbolCursos =
+    Nodo cursoC
+      (Nodo cursoHaskell
+        (Nodo cursoPython Vacio Vacio)
+        (Nodo cursoRuby Vacio Vacio))
+      (Nodo cursoGo
+        (Nodo cursoKotlin
+          (Nodo cursoSwift Vacio Vacio)
+          (Nodo cursoRust Vacio Vacio))
+        (Nodo cursoErlang
+          (Nodo cursoScala Vacio Vacio)
+          Vacio))
 
 {- === PRUEBAS: CASOS NORMALES === -}
 
--- 1. conCupo: Debería devolver la lista solo con MIPS y Prolog
+-- 1. conCupo: Debería devolver solo las courses con cupo > inscrito:
+--    Haskell(10/25), C(20/50), Swift(5/20), Kotlin(39/40), Go(45/60), Scala(0/10)
 pruebaConCupoNormal = conCupo listaCursos
 
--- 2. buscarCurso: Debería devolver Just (Curso 30 "Prolog" 20 19)
-pruebaBuscarNormal = buscarCurso 30 arbolCursos
+-- 2. buscarCurso: Debería devolver Just (Curso 35 "Ruby" 30 30)
+pruebaBuscarNormal = buscarCurso 35 arbolCursos
 
--- 3. totalInscriptos: Debería sumar 15 + 40 + 19 = 74
+-- 3. totalInscriptos: Debería sumar 211
 pruebaTotalInscriptos = totalInscriptos listaCursos
 
--- 4. inscribir: Debería devolver Right con la lista completa, sumando 1 inscripto a MIPS
-pruebaInscribirNormal = inscribir 10 listaCursos
+-- 4. inscribir: Debería devolver Right con la lista completa, sumando 1 inscripto a Haskell
+--    (Haskell pasa de 10 a 11)
+pruebaInscribirNormal = inscribir 5 listaCursos
 
--- 5. calcular: Debería devolver (3, 74) recorriendo todo el árbol
+-- 5. calcular: Debería devolver (10, 211) recorriendo todo el árbol
 pruebaCalcularArbol = calcular arbolCursos
 
 
 {- === PRUEBAS: CASOS LÍMITE Y DE ERROR === -}
 
--- 6. inscribir (Sin Cupo): Intenta inscribir en Java que tiene 40/40. Debería devolver Left "Sin cupo".
-pruebaInscribirLleno = inscribir 20 listaCursos
+-- 6. inscribir (Sin Cupo): Intenta inscribir en Python que tiene 35/35.
+--    Debería devolver Left "Sin cupo".
+pruebaInscribirLleno = inscribir 15 listaCursos
 
--- 7. inscribir (Inexistente): Intenta inscribir en un código que no existe. Debería devolver Left "Inexistente".
+-- 7. inscribir (Inexistente): Intenta inscribir en un código que no existe.
+--    Debería devolver Left "Inexistente".
 pruebaInscribirInexistente = inscribir 99 listaCursos
 
--- 8. inscribir (Borde exacto): Inscribe en Prolog, dejándolo en 20/20. Prueba que tu condición (cupo > inscrito) funciona justo en el límite.
-pruebaInscribirUltimoLugar = inscribir 30 listaCursos
+-- 8. inscribir (Borde exacto): Inscribe en Kotlin, que está en 39/40.
+--    Debería dejarlo en 40/40. Prueba que la condición (cupo > inscrito)
+--    funciona justo en el límite.
+pruebaInscribirUltimoLugar = inscribir 55 listaCursos
 
--- 9. buscarCurso (Árbol Vacío): Límite estructural. Buscar en un árbol sin inicializar debe dar Nothing.
+-- 9. buscarCurso (Árbol Vacío): Límite estructural.
+--    Buscar en un árbol sin inicializar debe dar Nothing.
 pruebaBuscarVacio = buscarCurso 10 Vacio
 
--- 10. inscribir (Lista Vacía): Límite estructural. Intentar inscribir en una base de datos vacía debe dar Left "Inexistente".
+-- 10. inscribir (Lista Vacía): Límite estructural.
+--     Intentar inscribir en una base de datos vacía debe dar Left "Inexistente".
 pruebaInscribirVacio = inscribir 10 []
 
--- 11. disponible: Devuelve False porque la presencia de un solo curso lleno (Java) debe invalidar todo el árbol mediante el fold.
+-- 11. disponible: Devuelve False porque hay varios cursos llenos
+--     (Python, Ruby, Rust, Erlang), y el fold exige que TODOS tengan cupo.
 pruebaDisponibleLimite = disponible arbolCursos
 
-
-
+{- ==================================================================================== -}
 
 {- Ejercicio 1 -}
 type Codigo = Int
@@ -85,7 +123,7 @@ totalInscriptos = foldr (\ (Curso _ _ _ inscrito) x -> inscrito + x) 0
 inscribir :: Int -> [Curso] -> Either String [Curso]
 inscribir _ [] = Left "Inexistente"
 inscribir code ((Curso codigo b cupo inscrito):xs)
-    | (code == codigo) && (cupo > inscrito) = Right ( (Curso codigo b cupo (inscrito+1) ) :xs )
+    | (code == codigo) && (cupo > inscrito) = Right [(Curso codigo b cupo (inscrito+1) )]
     | (code == codigo) && (cupo <= inscrito) = Left "Sin cupo"
     | otherwise = inscribir code xs
 

@@ -121,11 +121,15 @@ totalInscriptos = foldr (\ (Curso _ _ _ inscrito) x -> inscrito + x) 0
 
 {- Ejercicio 2-4 -}
 inscribir :: Int -> [Curso] -> Either String [Curso]
-inscribir _ [] = Left "Inexistente"
-inscribir code ((Curso codigo b cupo inscrito):xs)
-    | (code == codigo) && (cupo > inscrito) = Right [(Curso codigo b cupo (inscrito+1) )]
-    | (code == codigo) && (cupo <= inscrito) = Left "Sin cupo"
-    | otherwise = inscribir code xs
+inscribir code cursos = accumular code cursos []
+
+{- funcion auxiliar -}
+accumular :: Codigo -> [Curso] -> [Curso] -> Either String [Curso]
+accumular _ [] _ = Left "Inexistente"
+accumular code ((Curso codigo b cupo inscrito):xs) acc
+    | (code == codigo) && (cupo > inscrito) = Right ((reverse acc) ++ (Curso codigo b cupo (inscrito+1):xs))
+    | (code == codigo) && (cupo <= inscrito) = Left "Sin Cupo"
+    | otherwise = accumular code xs ((Curso codigo b cupo inscrito):acc)
 
 {- Ejercicio 2-5 -}
 foldArbol :: (a -> b -> b -> b) -> b -> Arbol a -> b
